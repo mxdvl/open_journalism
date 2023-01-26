@@ -5,14 +5,12 @@ import { get_doughtnut } from "./pie.ts";
 await serve(async (req) => {
   const test = new URL(req.url).pathname.slice(1);
 
-  console.log(test)
+  console.log(test);
 
   if (!test || test === "") throw new Error("Missing test ID");
 
   const { testUrl, breakdown_values, per_domain, first_party } =
-    await get_report(
-      test.slice(1),
-    );
+    await get_report(test);
 
   const body = `
 <!DOCTYPE html>
