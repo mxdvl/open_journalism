@@ -74,7 +74,7 @@ const get_segments = (
   );
 };
 
-export const get_doughtnut = (title: string, items: Items): string => {
+export const get_pie = (title: string, items: Items): string => {
   const { segments, texts } = get_segments(items);
   return `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="-300,-300 600,600" width="600" height="600">

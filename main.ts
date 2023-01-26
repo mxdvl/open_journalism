@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.174.0/http/server.ts";
 import { get_report } from "./audit.ts";
 import { get_map } from "./cached.ts";
-import { get_doughtnut } from "./pie.ts";
+import { get_pie } from "./pie.ts";
 import { get_table } from "./table.ts";
 
 const template = await Deno.readTextFile("./index.html");
@@ -64,9 +64,9 @@ await serve(async (req) => {
   return html(
     `Guardian Components audit – ${testUrl}`,
     ` <h1>Component audit for ${testUrl}</h1>
-  ${get_doughtnut("assets", breakdown_values)}
-  ${get_doughtnut("js", per_domain)}
-  ${get_doughtnut("1st party", first_party)}
+  ${get_pie("assets", breakdown_values)}
+  ${get_pie("js", per_domain)}
+  ${get_pie("1st party", first_party)}
   
   ${get_table("1st party", first_party)}
   `,
