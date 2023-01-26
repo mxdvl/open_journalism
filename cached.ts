@@ -21,3 +21,5 @@ export const cached = async (test: string): Promise<Result> => {
 
   return result;
 };
+
+export const get_map = () => new Map(map);

@@ -34,7 +34,7 @@ export const get_report = async (test: string) => {
     .filter(({ full_url }) => full_url.startsWith("https://assets.guim.co.uk/"))
     .map(({ full_url, objectSize }) => ({
       label: new URL(full_url).pathname.split("/").at(-1)?.replace(
-        /\.\w+\.js$/i,
+        /\.([a-z0-9]{20})\.js$/i,
         ".js",
       ) ??
         "unknown",
