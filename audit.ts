@@ -2,15 +2,24 @@ import { underline } from "https://deno.land/std@0.174.0/fmt/colors.ts";
 import { cached } from "./cached.ts";
 import { is_script } from "./parser.ts";
 
+const sorted_by_size = (
+  { size: a }: { size: number },
+  { size: b }: { size: number },
+) => b - a;
+
 export const get_report = async (test: string) => {
   const { testUrl, median: { firstView: { breakdown, requests } } } =
     await cached(test);
 
   console.info("Component audit for", underline(testUrl));
 
-  const breakdown_values = Object.entries(breakdown).map((
-    [label, { color, bytes }],
-  ) => ({ label, colour: ["rgb(", ...color, ")"].join(" "), size: bytes }));
+  const breakdown_values = Object.entries(breakdown)
+    .map(([label, { color, bytes }]) => ({
+      label,
+      colour: ["rgb(", ...color, ")"].join(" "),
+      size: bytes,
+    }))
+    .sort(sorted_by_size);
 
   const scripts = requests
     .filter(is_script);
@@ -28,7 +37,7 @@ export const get_report = async (test: string) => {
   const per_domain = [...breakdown_js.entries()].map(([label, size]) => ({
     label,
     size,
-  }));
+  })).sort(sorted_by_size);
 
   const first_party = scripts
     .filter(({ full_url }) => full_url.startsWith("https://assets.guim.co.uk/"))
@@ -40,7 +49,7 @@ export const get_report = async (test: string) => {
         "unknown",
       size: objectSize,
     }))
-    .sort((a, b) => b.size - a.size);
+    .sort(sorted_by_size);
 
   console.log(first_party);
 

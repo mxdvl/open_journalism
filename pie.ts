@@ -51,17 +51,22 @@ const get_segments = (
       ];
 
       const segment = `
-      <path fill="${colour ?? fallback_colour}" d="${d.join(" ")}"/>
+      <path fill="${colour ?? fallback_colour}" stroke="white" stroke-width="2"
+        d="${d.join(" ")}"/>
       `;
 
       const { x: x_mid, y: y_mid } = polar_to_cartesian(mid, 2 / 3 * radius);
 
+      const angle = length > 0.09 * tau
+        ? 0
+        : 360 * mid / tau + (mid > (tau / 4) ? 180 : 0);
+
+      console.log(label, mid.toFixed(3), (mid / tau).toFixed(4));
+
       const text = `
-      <text fill="black" x="${x_mid}" y="${y_mid}" >
+      <text fill="black" x="${x_mid}" y="${y_mid}" transform="rotate(${angle} ${x_mid} ${y_mid})" >
         <tspan dx="0" dy="0">${label}</tspan>
-        <tspan x="${x_mid}" dy="1.5em">${
-        (100 * size / total).toFixed(0)
-      }%</tspan>
+        <tspan dx="0.1em" dy="0">${(100 * size / total).toFixed(0)}%</tspan>
       </text>`;
 
       return {
@@ -78,7 +83,7 @@ export const get_pie = (title: string, items: Items): string => {
   const { segments, texts } = get_segments(items);
   return `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="-300,-300 600,600" width="600" height="600">
-      <style>text { font-family: monospace; font-size: 16px; text-anchor: middle }</style>
+      <style>text { font-family: monospace; font-size: 12px; text-anchor: middle }</style>
       <g fill="none" stroke-width="90">
       ${segments.join("\n")}
       ${texts.join("\n")}
