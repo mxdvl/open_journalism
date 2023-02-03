@@ -1,6 +1,4 @@
-import { config } from "https://deno.land/x/dotenv@v3.2.0/mod.ts";
-
-const { GITHUB_TOKEN } = config();
+const GITHUB_TOKEN = Deno.env.get("GITHUB_TOKEN");
 
 export const headers: HeadersInit = {
   "Authorization": `Bearer ${GITHUB_TOKEN}`,
