@@ -40,12 +40,18 @@ await serve(async (req) => {
       "Guardian Islands 🏝",
       `
       <style>
-      ul {display: grid; padding: 0; grid-template-columns: repeat(3, 1fr); gap: 1rem;}
-      li {list-style-type: none; border: 1px solid #eee; padding: 0.25rem;}
+      ul#components {display: grid; padding: 0; max-width: 96rem; grid-template-columns: repeat(2, 1fr); gap: 1rem;}
+      #components > li {
+        list-style-type: none; border: 4px solid #eee;
+        display: flex; flex-direction: column; height: min-content;
+      }
+      #components > li > * { padding: 0.25rem; }
+      #components > li > header { display: flex; justify-content: space-between; }
+      #components > li header, #components > li footer { background-color: #eee; }
       </style>
       <h1>Guardian Islands</h1>
       <h2>Automatically sourced from <a href="https://github.com/guardian/dotcom-rendering/tree/main/dotcom-rendering/src/web/components">Github</a></h2>
-      <ul>${components_list.join("\n")}</ul>`,
+      <ul id="components">${components_list.join("\n")}</ul>`,
     );
   }
 

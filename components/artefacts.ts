@@ -1,12 +1,6 @@
 import * as zod from "https://deno.land/x/zod@v3.20.2/mod.ts";
-import { config } from "https://deno.land/x/dotenv@v3.2.0/mod.ts";
 import { decompress } from "https://deno.land/x/zip@v1.2.5/mod.ts";
-
-const { GITHUB_TOKEN } = config();
-
-const request_init: RequestInit = {
-  headers: { "Authorization": `Bearer ${GITHUB_TOKEN}` },
-};
+import { headers } from "./github.ts";
 
 const entry = zod.object({
   artifacts: zod.array(zod.object({
@@ -34,7 +28,7 @@ const artefacts = await fetch(
     }`,
     api,
   ),
-  request_init,
+  { headers },
 ).then((r) => r.json()).then((r) =>
   entry.parse(r).artifacts.filter(({ workflow_run }) =>
     workflow_run.head_branch === "main"
@@ -45,7 +39,7 @@ const artefacts = await fetch(
 );
 
 for (const artefact of artefacts) {
-  const archive = await fetch(artefact.archive_download_url, request_init);
+  const archive = await fetch(artefact.archive_download_url, { headers });
 
   const path = `./zip/bundle-analysis-${artefact.created_at}.zip`;
 
