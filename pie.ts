@@ -3,6 +3,7 @@ const tau = Math.PI * 2;
 
 const PRECISION = 3;
 const radius = 300;
+const diameter = radius * 2;
 
 interface Item {
   label: string;
@@ -33,8 +34,6 @@ const get_segments = (
 
       const mid = start + length / 2;
       const end = start + length;
-
-      //   const adjust = (index % 2 === 0 ? 1 : -1) * radius / 20;
 
       const fallback_colour = `hsl(${index * 44} 72% 60%)`;
 
@@ -82,7 +81,7 @@ const get_segments = (
 export const get_pie = (title: string, items: Items): string => {
   const { segments, texts } = get_segments(items);
   return `
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="-300,-300 600,600" width="600" height="600">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="-${radius},-${radius} ${diameter},${diameter}" width="${diameter}" height="${diameter}">
       <style>text { font-family: monospace; font-size: 12px; text-anchor: middle }</style>
       <g fill="none" stroke-width="90">
       ${segments.join("\n")}

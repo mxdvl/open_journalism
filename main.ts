@@ -1,7 +1,6 @@
-import { serve } from "https://deno.land/std@0.174.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.180.0/http/server.ts";
 import { get_report } from "./audit.ts";
 import { get_map } from "./cached.ts";
-import { components_list } from "./components/components.ts";
 import { get_pie } from "./pie.ts";
 import { get_table } from "./table.ts";
 
@@ -32,26 +31,6 @@ await serve(async (req) => {
     return new Response(
       await Deno.readFile(import.meta.resolve(`./components/${test}`)),
       { headers: { "Content-Type": "image/png" } },
-    );
-  }
-
-  if (test === "components") {
-    return html(
-      "Guardian Islands 🏝",
-      `
-      <style>
-      ul#components {display: grid; padding: 0; max-width: 96rem; grid-template-columns: repeat(2, 1fr); gap: 1rem;}
-      #components > li {
-        list-style-type: none; border: 4px solid #eee;
-        display: flex; flex-direction: column; height: min-content;
-      }
-      #components > li > * { padding: 0.25rem; }
-      #components > li > header { display: flex; justify-content: space-between; }
-      #components > li header, #components > li footer { background-color: #eee; }
-      </style>
-      <h1>Guardian Islands</h1>
-      <h2>Automatically sourced from <a href="https://github.com/guardian/dotcom-rendering/tree/main/dotcom-rendering/src/web/components">Github</a></h2>
-      <ul id="components">${components_list.join("\n")}</ul>`,
     );
   }
 

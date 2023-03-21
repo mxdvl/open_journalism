@@ -1,4 +1,4 @@
-import { underline } from "https://deno.land/std@0.174.0/fmt/colors.ts";
+import { underline } from "https://deno.land/std@0.180.0/fmt/colors.ts";
 import { cached } from "./cached.ts";
 import { is_script } from "./parser.ts";
 

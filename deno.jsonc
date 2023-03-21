@@ -1,11 +1,14 @@
 {
+  "tasks": {
+    "dev": "deno run -A --watch main.ts"
+  },
   "compilerOptions": {
     "noUncheckedIndexedAccess": true,
     "lib": [
       "dom",
       "dom.iterable",
       "dom.asynciterable",
-      "deno.ns",
+      "deno.ns"
     ]
   }
 }
