@@ -7,6 +7,13 @@ import { get_table } from "./table.ts";
 
 const template = await Deno.readTextFile("./index.html");
 
+const to_string = (array: Record<string, string | number>[]) =>
+  array.map((item) =>
+    "{" + Object.entries(item).map(([key, value]) =>
+      `${key}: ${typeof value === "number" ? value : `"${value}"`}`
+    ) + "}"
+  );
+
 const html = (title: string, body: string) =>
   new Response(
     template
@@ -69,6 +76,24 @@ await serve(async (req) => {
   const { testUrl, breakdown_values, per_domain, first_party } =
     await get_report(test);
 
+  const links = [
+    per_domain
+      .map(({ label, size }) => ({
+        source: "js",
+        target: label,
+        value: size,
+      })),
+    breakdown_values
+      .filter(({ label }) => label !== "js")
+      .map((
+        { label, size },
+      ) => ({
+        source: label,
+        target: "not-js",
+        value: size,
+      })),
+  ].flat();
+
   return html(
     `Guardian page weight – ${test}`,
     `<h1>Guardian page weight report – <a href="https://www.webpagetest.org/result/${test}/">wepagetest #${test}</a></h1>
@@ -82,6 +107,20 @@ await serve(async (req) => {
       ),
       // get_pie("1st party", first_party),
     ]}
+
+    <script type="module">
+
+    const links = [
+      ${to_string(links)}
+    ]
+    
+    ${await Deno.readTextFile(
+      new URL(import.meta.resolve("./sankey.js")),
+    )};
+    document.querySelector("#sankey")?.appendChild(chart);
+    </script>
+
+    <div id="sankey"></div>
   
   ${get_table("All JavaScript", per_domain)}
   ${get_table("1st party JavaScript", first_party)}
