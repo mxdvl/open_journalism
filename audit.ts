@@ -51,7 +51,5 @@ export const get_report = async (test: string) => {
     }))
     .sort(sorted_by_size);
 
-  console.log(first_party);
-
   return { testUrl, per_domain, breakdown_values, first_party };
 };

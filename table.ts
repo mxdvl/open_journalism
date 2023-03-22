@@ -11,7 +11,9 @@ const { format } = Intl.NumberFormat("en-GB");
 export const get_table = (title: string, items: Items) => {
   const rows = items
     .map(({ label, size }) =>
-      `<tr><td>${label}</td><td class="right">${format(size)}</td></tr>`
+      `<tr><td>${label}</td><td class="right">${
+        format(Math.ceil(size / 1_000))
+      } kB</td></tr>`
     )
     .join("\n");
 

@@ -1,7 +1,8 @@
 import { serve } from "https://deno.land/std@0.180.0/http/server.ts";
 import { get_report } from "./audit.ts";
 import { get_map } from "./cached.ts";
-import { get_pie } from "./pie.ts";
+import { get_chart } from "./chart.ts";
+// import { get_pie } from "./pie.ts";
 import { get_table } from "./table.ts";
 
 const template = await Deno.readTextFile("./index.html");
@@ -69,13 +70,21 @@ await serve(async (req) => {
     await get_report(test);
 
   return html(
-    `Guardian Components audit – ${testUrl}`,
-    ` <h1>Component audit for ${testUrl}</h1>
-  ${get_pie("assets", breakdown_values)}
-  ${get_pie("js", per_domain)}
-  ${get_pie("1st party", first_party)}
+    `Guardian page weight – ${test}`,
+    `<h1>Guardian page weight report – <a href="https://www.webpagetest.org/result/${test}/">wepagetest #${test}</a></h1>
+    <h2>${testUrl}</h2>
+    ${[
+      // get_pie("assets", breakdown_values),
+      // get_pie("js", per_domain),
+      get_chart(
+        per_domain,
+        breakdown_values.filter((value) => value.label !== "js"),
+      ),
+      // get_pie("1st party", first_party),
+    ]}
   
-  ${get_table("1st party", first_party)}
+  ${get_table("All JavaScript", per_domain)}
+  ${get_table("1st party JavaScript", first_party)}
   `,
   );
 });

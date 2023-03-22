@@ -5,13 +5,13 @@ const PRECISION = 3;
 const radius = 300;
 const diameter = radius * 2;
 
-interface Item {
+export interface Item {
   label: string;
   size: number;
   colour?: string;
 }
 
-type Items = Item[];
+export type Items = Item[];
 
 const polar_to_cartesian = (angle: number, radius: number) => ({
   x: (Math.cos(angle) * radius).toFixed(PRECISION),
