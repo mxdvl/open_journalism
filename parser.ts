@@ -35,7 +35,7 @@ const result = object({
   from: string(),
   median: object({
     firstView: object({
-      "lighthouse.Performance": number(),
+      "lighthouse.Performance": number().optional(),
       requests: array(request),
       breakdown: object({
         html: type,

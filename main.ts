@@ -105,12 +105,16 @@ await serve(async (req) => {
       })),
   ] satisfies { source: string; target: string; value: number }[][];
 
+  const perf_score = performance === undefined
+    ? ""
+    : `<h3>Lighthouse performance score: ${Math.round(performance * 100)}</h3>`;
+
   return html(
     `Guardian page weight – ${test}`,
     `<h1>Guardian page weight report – <a href="https://www.webpagetest.org/result/${test}/">wepagetest #${test}</a></h1>
     <h2>${testUrl}</h2>
 
-    <h3>Lighthouse performance score: ${Math.round(performance * 100)}</h3>
+    ${perf_score}
     <h3>From: ${from}</h3>
 
     <script type="module">
