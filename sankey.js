@@ -10,7 +10,7 @@ export const chart = SankeyChart(
   {
     nodeGroup: (d) => d.id.split(/\W/)[0], // take first word for color
     nodeAlign: "justify", // e.g., d3.sankeyJustify; set by input above
-    linkColor: "source", // e.g., "source" or "target"; set by input above
+    linkColor: "source-target", // e.g., "source" or "target"; set by input above
     format: (
       (f) => (d) =>
         `${f(Math.ceil(d / 1000))} kB`

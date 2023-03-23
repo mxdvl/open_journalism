@@ -83,16 +83,21 @@ await serve(async (req) => {
         target: label,
         value: size,
       })),
+    first_party.slice(0, 6).map(({ label, size }) => ({
+      source: "assets.guim.co.uk",
+      target: label,
+      value: size,
+    })),
     breakdown_values
       .filter(({ label }) => label !== "js")
       .map((
         { label, size },
       ) => ({
-        source: label,
-        target: "not-js",
+        source: "everything else",
+        target: label,
         value: size,
       })),
-  ].flat();
+  ] satisfies { source: string; target: string; value: number }[][];
 
   return html(
     `Guardian page weight – ${test}`,
@@ -111,7 +116,7 @@ await serve(async (req) => {
     <script type="module">
 
     const links = [
-      ${to_string(links)}
+      ${to_string(links.flat())}
     ]
     
     ${await Deno.readTextFile(
