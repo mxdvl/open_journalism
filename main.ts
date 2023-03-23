@@ -106,7 +106,7 @@ await serve(async (req) => {
   ] satisfies { source: string; target: string; value: number }[][];
 
   const perf_score = performance === undefined
-    ? ""
+    ? "<h3>(no Lighthouse score for this test)</h3>"
     : `<h3>Lighthouse performance score: ${Math.round(performance * 100)}</h3>`;
 
   return html(
