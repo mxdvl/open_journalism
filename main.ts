@@ -82,18 +82,30 @@ await serve(async (req) => {
     from,
   } = await get_report(test);
 
+  const total = breakdown_values.find(({ label }) => label === "js")?.size ??
+    100_000;
+  const is_small = (size: number) => total && size / total > 1 / 100;
+
+  const other_domains = per_domain.filter(({ size }) => !is_small(size)).reduce(
+    (acc, { size }) => acc + size,
+    0,
+  );
+
   const links = [
-    per_domain
-      .map(({ label, size }) => ({
-        source: "js",
-        target: label,
-        value: size,
-      })),
     first_party.slice(0, 6).map(({ label, size }) => ({
       source: "assets.guim.co.uk",
       target: label,
       value: size,
     })),
+    per_domain
+      .filter(({ size }) => is_small(size))
+      .map(({ label, size }) => ({
+        source: "js",
+        target: label,
+        value: size,
+      })),
+    [{ source: "js", "target": "other domains < 1%", value: other_domains }],
+
     breakdown_values
       .filter(({ label }) => label !== "js")
       .map((
