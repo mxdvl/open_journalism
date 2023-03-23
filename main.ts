@@ -73,8 +73,14 @@ await serve(async (req) => {
     );
   }
 
-  const { testUrl, breakdown_values, per_domain, first_party } =
-    await get_report(test);
+  const {
+    testUrl,
+    breakdown_values,
+    per_domain,
+    first_party,
+    performance,
+    from,
+  } = await get_report(test);
 
   const links = [
     per_domain
@@ -103,18 +109,11 @@ await serve(async (req) => {
     `Guardian page weight – ${test}`,
     `<h1>Guardian page weight report – <a href="https://www.webpagetest.org/result/${test}/">wepagetest #${test}</a></h1>
     <h2>${testUrl}</h2>
-    ${[
-      // get_pie("assets", breakdown_values),
-      // get_pie("js", per_domain),
-      get_chart(
-        per_domain,
-        breakdown_values.filter((value) => value.label !== "js"),
-      ),
-      // get_pie("1st party", first_party),
-    ]}
+
+    <h3>Lighthouse performance score: ${Math.round(performance * 100)}</h3>
+    <h3>From: ${from}</h3>
 
     <script type="module">
-
     const links = [
       ${to_string(links.flat())}
     ]
@@ -125,10 +124,12 @@ await serve(async (req) => {
     document.querySelector("#sankey")?.appendChild(chart);
     </script>
 
-    <div id="sankey"></div>
-  
-  ${get_table("All JavaScript", per_domain)}
-  ${get_table("1st party JavaScript", first_party)}
+    <div id="sankey" style="display: flex; min-height: 600px"></div>
+
+    <div id="tables" style="display: flex; flex-wrap: wrap; gap: 1em;">
+    ${get_table("All JavaScript", per_domain)}
+    ${get_table("1st party JavaScript", first_party)}
+    </div>
   `,
   );
 });

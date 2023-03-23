@@ -8,8 +8,13 @@ const sorted_by_size = (
 ) => b - a;
 
 export const get_report = async (test: string) => {
-  const { testUrl, median: { firstView: { breakdown, requests } } } =
-    await cached(test);
+  const {
+    testUrl,
+    from,
+    median: {
+      firstView: { breakdown, requests, "lighthouse.Performance": performance },
+    },
+  } = await cached(test);
 
   console.info("Component audit for", underline(testUrl));
 
@@ -51,5 +56,12 @@ export const get_report = async (test: string) => {
     }))
     .sort(sorted_by_size);
 
-  return { testUrl, per_domain, breakdown_values, first_party };
+  return {
+    testUrl,
+    per_domain,
+    breakdown_values,
+    first_party,
+    performance,
+    from,
+  };
 };

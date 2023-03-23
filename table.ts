@@ -17,7 +17,8 @@ export const get_table = (title: string, items: Items) => {
     )
     .join("\n");
 
-  return `<h2>${title}</h2>
+  return `<div>
+  <h2>${title}</h2>
     <table>
         <thead>
             <td>Name</td>
@@ -27,5 +28,6 @@ export const get_table = (title: string, items: Items) => {
             ${rows}
         </tbody>
     </table>
+  </div>
   `;
 };

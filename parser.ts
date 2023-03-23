@@ -32,8 +32,10 @@ const request = object({
 
 const result = object({
   testUrl: string(),
+  from: string(),
   median: object({
     firstView: object({
+      "lighthouse.Performance": number(),
       requests: array(request),
       breakdown: object({
         html: type,
