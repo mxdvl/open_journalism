@@ -1,8 +1,6 @@
 import { serve } from "https://deno.land/std@0.180.0/http/server.ts";
 import { get_report } from "./audit.ts";
 import { get_map } from "./cached.ts";
-import { get_chart } from "./chart.ts";
-// import { get_pie } from "./pie.ts";
 import { get_table } from "./table.ts";
 
 const template = await Deno.readTextFile("./index.html");
