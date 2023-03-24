@@ -63,5 +63,9 @@ export const get_report = async (test: string) => {
     first_party,
     performance,
     from,
+    requests: requests.map((request) => ({
+      request_type: "Unknown",
+      ...request,
+    })),
   };
 };

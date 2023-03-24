@@ -75,50 +75,68 @@ await serve(async (req) => {
 
   const {
     testUrl,
-    breakdown_values,
     per_domain,
     first_party,
     performance,
     from,
+    requests,
   } = await get_report(test);
 
-  const total = breakdown_values.find(({ label }) => label === "js")?.size ??
-    100_000;
-  const is_small = (size: number) => total && size / total > 1 / 100;
+  const total = requests.reduce((acc, req) => acc + req.objectSize, 0);
 
-  const other_domains = per_domain.filter(({ size }) => !is_small(size)).reduce(
-    (acc, { size }) => acc + size,
-    0,
-  );
+  const sorted_requests = requests
+    .slice()
+    .sort((a, b) => b.objectSize - a.objectSize);
+
+  // console.log(sorted_requests);
+
+  const requests_per_type_and_domain = [
+    ...sorted_requests
+      .reduce((map, { full_url, request_type, objectSize }) => {
+        const id = [request_type, new URL(full_url).hostname].join("/");
+        const existing = map.get(id) ?? 0;
+        map.set(id, existing + objectSize);
+        return map;
+      }, new Map<string, number>()).entries(),
+  ];
+
+  const grouped = (target: string) => {
+    const [request_type, , ...rest] = target.split("/");
+    return [request_type, "(other domains)", ...rest].join("/");
+  };
+
+  console.log(requests_per_type_and_domain);
+
+  const threshold = total / 250;
 
   const links = [
-    [{ source: "js (budget)", target: "js", value: 358_400 }],
-    [{ source: "everything else (budget)", target: "everything else", value: 153_600 }],
-    
-    first_party.slice(0, 6).map(({ label, size }) => ({
-      source: "assets.guim.co.uk",
-      target: label,
-      value: size,
-    })),
+    // [{ source: "Script/budget", target: "Script", value: 358_400 }],
+    // [{
+    //   source: "Document/budget",
+    //   target: "Document",
+    //   value: 153_600,
+    // }],
 
-    per_domain
-      .filter(({ size }) => is_small(size))
-      .map(({ label, size }) => ({
-        source: "js",
-        target: label,
-        value: size,
+    requests_per_type_and_domain
+      .filter(([, value]) => value > 100)
+      .map(([target, value]) => ({
+        source: target.split("/").at(0) ?? "Unknown",
+        target: value > threshold ? target : grouped(target),
+        value,
       })),
 
-    [{ source: "js", "target": "other domains < 1%", value: other_domains }],
-
-    breakdown_values
-      .filter(({ label }) => label !== "js")
-      .map((
-        { label, size },
-      ) => ({
-        source: "everything else",
-        target: label,
-        value: size,
+    sorted_requests
+      .filter(({ objectSize }) => objectSize > threshold)
+      .map(({ request_type, full_url, objectSize }) => ({
+        source: objectSize > threshold
+          ? [request_type, new URL(full_url).hostname].join("/")
+          : [request_type, "(other domains)"].join("/"),
+        target: [
+          request_type,
+          new URL(full_url).hostname,
+          new URL(full_url).pathname.slice(1),
+        ].join("/"),
+        value: objectSize,
       })),
   ] satisfies { source: string; target: string; value: number }[][];
 

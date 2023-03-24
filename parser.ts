@@ -26,7 +26,6 @@ const request = object({
     "XHR",
     "Preflight",
   ]).optional(),
-  contentType: string(),
   objectSize: number(),
 });
 

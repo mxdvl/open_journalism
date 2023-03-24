@@ -1,22 +1,77 @@
 import * as d3 from "https://esm.sh/d3@7.8.2";
 import * as d3Sankey from "https://esm.sh/d3-sankey@0.12.3";
 
-const width = 600;
+const colour_mappings = /** @type {const} */ ({
+  js: "#10C8A7",
+  "js-1st": "#AE10C8",
+  "js-3rd": "#00DAF8",
+  image: "#E38800",
+  html: "#FF3D00",
+  css: "#FF0099",
+  font: "#FFC700",
+  other: "#B3B3B3",
+});
+
+const nodeGroups = Object.keys(colour_mappings);
+const colors = Object.values(colour_mappings);
+
+/** @type {(d: {id: string}) => number} */
+const nodeGroup = ({ id }) => {
+  const [type, domain, path] = id.split("/");
+
+  switch (type) {
+    case "Script": {
+      if (
+        ["assets.guim.co.uk", "contributions.guardianapis.com"].includes(domain)
+      ) {
+        return nodeGroups.indexOf("js-1st");
+      } else {
+        return nodeGroups.indexOf("js");
+      }
+    }
+
+    case "Document":
+      return nodeGroups.indexOf("html");
+
+    case "Image":
+      return nodeGroups.indexOf("image");
+
+    case "Font":
+      return nodeGroups.indexOf("font");
+
+    case "Fetch":
+    case "XHR":
+    default:
+      return nodeGroups.indexOf("other");
+  }
+};
+
+const nodeLabel = ({ id }) => {
+  const path = id.split("/").at(-1);
+  const [one, two, ...rest] = path.split(".");
+  const ellipse = rest?.length > 1 ? "…" : undefined;
+  return [one?.slice(0, 24), two?.slice(0, 12), ellipse, rest.at(-1)]
+    .filter(Boolean)
+    .join(".");
+};
 
 export const chart = SankeyChart(
   {
     links,
   },
   {
-    nodeGroup: (d) => d.id.split(/\W/)[0], // take first word for color
-    nodeAlign: "justify", // e.g., d3.sankeyJustify; set by input above
+    nodeGroup,
+    nodeGroups,
+    nodeLabel,
+    nodeAlign: "left", // e.g., d3.sankeyJustify; set by input above
     linkColor: "source-target", // e.g., "source" or "target"; set by input above
     format: (
       (f) => (d) =>
         `${f(Math.ceil(d / 1000))} kB`
     )(d3.format(",.1~f")),
-    width,
+    width: 900,
     height: 600,
+    colors,
   }
 );
 
@@ -97,6 +152,8 @@ export function SankeyChart(
   // Construct the scales.
   const color = nodeGroup == null ? null : d3.scaleOrdinal(nodeGroups, colors);
 
+  Array.from({ length: colors.length }, (_, i) => color(i));
+
   // Compute the Sankey layout.
   d3Sankey
     .sankey()
@@ -104,6 +161,7 @@ export function SankeyChart(
     .nodeAlign(nodeAlign)
     .nodeWidth(nodeWidth)
     .nodePadding(nodePadding)
+    // .nodeSort((a, b) => a.value - b.value)
     .extent([
       [marginLeft, marginTop],
       [width - marginRight, height - marginBottom],
