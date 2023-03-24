@@ -1,4 +1,9 @@
+# Work in progress
 wip
-
-.env
 zip
+
+# IDE Configuration
+.vscode
+
+# Environment
+.env
