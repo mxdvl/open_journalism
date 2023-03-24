@@ -104,6 +104,13 @@ await serve(async (req) => {
   const threshold = total / 250;
 
   const links = [
+    [{ source: "Script/budget", target: "Script", value: 358_400 }],
+    [{
+      source: "Document/budget",
+      target: "Document",
+      value: 153_600,
+    }],
+
     requests_per_type_and_domain
       .filter(([, value]) => value > 100)
       .map(([target, value]) => ({

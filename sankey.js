@@ -72,7 +72,7 @@ export const chart = SankeyChart(
     nodeGroup,
     nodeGroups,
     nodeLabel,
-    nodeAlign: "left", // e.g., d3.sankeyJustify; set by input above
+    nodeAlign: "right", // e.g., d3.sankeyJustify; set by input above
     linkColor: "source-target", // e.g., "source" or "target"; set by input above
     format: (
       (f) => (d) =>
