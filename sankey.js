@@ -48,9 +48,14 @@ const nodeGroup = ({ id }) => {
   }
 };
 
-const nodeLabel = ({ id }) => {
+const nodeLabel = ({ id, value }) => {
   const path = id.split("/").at(-1);
   const [one, two, ...rest] = path.split(".");
+
+  if (["Script", "Document"].includes(one)) {
+    return `${one} (${Math.ceil(value / 1000)} kB)`;
+  }
+
   const ellipse = rest?.length > 1 ? "…" : undefined;
   return [one?.slice(0, 24), two?.slice(0, 12), ellipse, rest.at(-1)]
     .filter(Boolean)
