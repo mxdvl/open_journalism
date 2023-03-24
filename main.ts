@@ -92,11 +92,15 @@ await serve(async (req) => {
   );
 
   const links = [
+    [{ source: "js (budget)", target: "js", value: 358_400 }],
+    [{ source: "everything else (budget)", target: "everything else", value: 153_600 }],
+    
     first_party.slice(0, 6).map(({ label, size }) => ({
       source: "assets.guim.co.uk",
       target: label,
       value: size,
     })),
+
     per_domain
       .filter(({ size }) => is_small(size))
       .map(({ label, size }) => ({
@@ -104,6 +108,7 @@ await serve(async (req) => {
         target: label,
         value: size,
       })),
+
     [{ source: "js", "target": "other domains < 1%", value: other_domains }],
 
     breakdown_values
