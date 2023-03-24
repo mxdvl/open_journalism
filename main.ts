@@ -88,8 +88,6 @@ await serve(async (req) => {
     .slice()
     .sort((a, b) => b.objectSize - a.objectSize);
 
-  // console.log(sorted_requests);
-
   const requests_per_type_and_domain = [
     ...sorted_requests
       .reduce((map, { full_url, request_type, objectSize }) => {
@@ -105,18 +103,9 @@ await serve(async (req) => {
     return [request_type, "(other domains)", ...rest].join("/");
   };
 
-  console.log(requests_per_type_and_domain);
-
   const threshold = total / 250;
 
   const links = [
-    // [{ source: "Script/budget", target: "Script", value: 358_400 }],
-    // [{
-    //   source: "Document/budget",
-    //   target: "Document",
-    //   value: 153_600,
-    // }],
-
     requests_per_type_and_domain
       .filter(([, value]) => value > 100)
       .map(([target, value]) => ({
@@ -156,6 +145,8 @@ await serve(async (req) => {
     const links = [
       ${to_string(links.flat())}
     ]
+
+    const height = ${Math.ceil(total / 3_000)}
     
     ${await Deno.readTextFile(
       new URL(import.meta.resolve("./sankey.js")),

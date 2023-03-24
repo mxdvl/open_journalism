@@ -17,7 +17,7 @@ const colors = Object.values(colour_mappings);
 
 /** @type {(d: {id: string}) => number} */
 const nodeGroup = ({ id }) => {
-  const [type, domain, path] = id.split("/");
+  const [type, domain] = id.split("/");
 
   switch (type) {
     case "Script": {
@@ -25,6 +25,8 @@ const nodeGroup = ({ id }) => {
         ["assets.guim.co.uk", "contributions.guardianapis.com"].includes(domain)
       ) {
         return nodeGroups.indexOf("js-1st");
+      } else if (domain) {
+        return nodeGroups.indexOf("js-3rd");
       } else {
         return nodeGroups.indexOf("js");
       }
@@ -69,9 +71,12 @@ export const chart = SankeyChart(
       (f) => (d) =>
         `${f(Math.ceil(d / 1000))} kB`
     )(d3.format(",.1~f")),
-    width: 900,
-    height: 600,
+    width: 960,
+    height,
     colors,
+    marginRight: 180,
+    nodeStroke: "none",
+    nodePadding: 6,
   }
 );
 
@@ -106,7 +111,7 @@ export function SankeyChart(
     linkTitle = (d) => `${d.source.id} → ${d.target.id}\n${format(d.value)}`, // given d in (computed) links
     linkColor = "source-target", // source, target, source-target, or static color
     linkStrokeOpacity = 0.5, // link stroke opacity
-    linkMixBlendMode = "multiply", // link blending mode
+    linkMixBlendMode = "screen", // link blending mode
     colors = d3.schemeTableau10, // array of colors
     width = 640, // outer width, in pixels
     height = 400, // outer height, in pixels
@@ -161,7 +166,20 @@ export function SankeyChart(
     .nodeAlign(nodeAlign)
     .nodeWidth(nodeWidth)
     .nodePadding(nodePadding)
-    // .nodeSort((a, b) => a.value - b.value)
+    .linkSort((a, b) => {
+      const [a_group, b_group] = [nodeGroup(a.target), nodeGroup(b.target)];
+
+      if (a_group === b_group) return b.value - a.value;
+
+      return a_group - b_group;
+    })
+    .nodeSort((a, b) => {
+      const [a_group, b_group] = [nodeGroup(a), nodeGroup(b)];
+
+      if (a_group === b_group) return b.value - a.value;
+
+      return a_group - b_group;
+    })
     .extent([
       [marginLeft, marginTop],
       [width - marginRight, height - marginBottom],
@@ -262,12 +280,10 @@ export function SankeyChart(
       .selectAll("text")
       .data(nodes)
       .join("text")
-      .attr("x", (d) =>
-        d.x0 < width / 2 ? d.x1 + nodeLabelPadding : d.x0 - nodeLabelPadding
-      )
+      .attr("x", (d) => d.x1 + nodeLabelPadding)
       .attr("y", (d) => (d.y1 + d.y0) / 2)
       .attr("dy", "0.35em")
-      .attr("text-anchor", (d) => (d.x0 < width / 2 ? "start" : "end"))
+      .attr("text-anchor", "start")
       .text(({ index: i }) => Tl[i]);
 
   function intern(value) {

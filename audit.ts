@@ -7,6 +7,8 @@ const sorted_by_size = (
   { size: b }: { size: number },
 ) => b - a;
 
+const types = ["Script", "Document", "Image", "Font", "Other"] as const;
+
 export const get_report = async (test: string) => {
   const {
     testUrl,
@@ -63,9 +65,15 @@ export const get_report = async (test: string) => {
     first_party,
     performance,
     from,
-    requests: requests.map((request) => ({
-      request_type: "Unknown",
-      ...request,
-    })),
+    requests: requests.map((request) => {
+      const request_type = types.find((type) =>
+        type === request.request_type
+      ) ?? types[4];
+
+      return ({
+        ...request,
+        request_type,
+      });
+    }),
   };
 };
