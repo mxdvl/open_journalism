@@ -48,12 +48,14 @@ const nodeGroup = ({ id }) => {
   }
 };
 
+const { format } = Intl.NumberFormat("en-GB");
+
 const nodeLabel = ({ id, value }) => {
   const path = id.split("/").at(-1);
   const [one, two, ...rest] = path.split(".");
 
-  if (["Script", "Document"].includes(one)) {
-    return `${one} (${Math.ceil(value / 1000)} kB)`;
+  if (two === undefined) {
+    return `${one} (${format(Math.ceil(value / 1000))} kB)`;
   }
 
   const ellipse = rest?.length > 1 ? "…" : undefined;
