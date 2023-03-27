@@ -35,6 +35,7 @@ const nodeGroup = ({ id }) => {
     case "Document":
       return nodeGroups.indexOf("html");
 
+    case "Media":
     case "Image":
       return nodeGroups.indexOf("image");
 

@@ -7,7 +7,14 @@ const sorted_by_size = (
   { size: b }: { size: number },
 ) => b - a;
 
-const types = ["Script", "Document", "Image", "Font", "Other"] as const;
+const types = [
+  "Script",
+  "Document",
+  "Image",
+  "Media",
+  "Font",
+  "Other",
+] as const;
 
 export const get_report = async (test: string) => {
   const {

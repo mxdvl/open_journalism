@@ -20,6 +20,7 @@ const request = object({
     "Fetch",
     "Font",
     "Image",
+    "Media",
     "Other",
     "Script",
     "Stylesheet",
