@@ -83,7 +83,7 @@ await serve(async (req) => {
   const total = requests.reduce((acc, req) => acc + req.objectSize, 0);
 
   const sorted_requests = requests
-    .slice()
+    .filter(({ request_type }) => request_type !== "Preflight")
     .sort((a, b) => b.objectSize - a.objectSize);
 
   const requests_per_type_and_domain = [

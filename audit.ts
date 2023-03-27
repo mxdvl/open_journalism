@@ -14,6 +14,7 @@ const types = [
   "Media",
   "Font",
   "Stylesheet",
+  "Preflight",
 ] as const;
 
 export const get_report = async (test: string) => {
@@ -80,7 +81,7 @@ export const get_report = async (test: string) => {
       return ({
         ...request,
         request_type,
-      });
+      } as const);
     }),
   };
 };
