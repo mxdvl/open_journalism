@@ -15,6 +15,8 @@ const type = object({
 
 const request = object({
   full_url: string(),
+  responseCode: number(),
+  headers: object({ request: array(string()) }),
   request_type: literal_union([
     "Document",
     "Fetch",

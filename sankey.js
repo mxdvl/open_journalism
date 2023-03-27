@@ -47,6 +47,7 @@ const nodeGroup = ({ id }) => {
 
     case "Fetch":
     case "XHR":
+    case "Other":
     default:
       return nodeGroups.indexOf("other");
   }

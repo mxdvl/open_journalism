@@ -84,6 +84,16 @@ await serve(async (req) => {
 
   const sorted_requests = requests
     .filter(({ request_type }) => request_type !== "Preflight")
+    .map((request) =>
+      request.request_type === "Image"
+        ? { ...request, request_type: "Media" }
+        : request
+    )
+    .map((request) =>
+      request.full_url.endsWith(".mp4")
+        ? { ...request, request_type: "Media" }
+        : request
+    )
     .sort((a, b) => b.objectSize - a.objectSize);
 
   const requests_per_type_and_domain = [
@@ -102,6 +112,13 @@ await serve(async (req) => {
   };
 
   const threshold = total / 250;
+
+  console.log(
+    sorted_requests.filter(({ full_url }) => full_url.includes("Video_for_top"))
+      .map(({ headers }) =>
+        headers.request.filter((header) => header.startsWith("range:"))
+      ),
+  );
 
   const links = [
     requests_per_type_and_domain
