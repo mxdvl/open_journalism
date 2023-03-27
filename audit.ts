@@ -13,7 +13,7 @@ const types = [
   "Image",
   "Media",
   "Font",
-  "Other",
+  "Stylesheet",
 ] as const;
 
 export const get_report = async (test: string) => {
@@ -75,7 +75,7 @@ export const get_report = async (test: string) => {
     requests: requests.map((request) => {
       const request_type = types.find((type) =>
         type === request.request_type
-      ) ?? types[4];
+      ) ?? "Other";
 
       return ({
         ...request,

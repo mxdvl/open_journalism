@@ -42,6 +42,9 @@ const nodeGroup = ({ id }) => {
     case "Font":
       return nodeGroups.indexOf("font");
 
+    case "Stylesheet":
+      return nodeGroups.indexOf("css");
+
     case "Fetch":
     case "XHR":
     default:
