@@ -106,35 +106,21 @@ await serve(async (req) => {
       }, new Map<string, number>()).entries(),
   ];
 
-  const grouped = (target: string) => {
-    const [request_type, , ...rest] = target.split("/");
-    return [request_type, "(other domains)", ...rest].join("/");
-  };
-
   const threshold = total / 250;
-
-  console.log(
-    sorted_requests.filter(({ full_url }) => full_url.includes("Video_for_top"))
-      .map(({ headers }) =>
-        headers.request.filter((header) => header.startsWith("range:"))
-      ),
-  );
 
   const links = [
     requests_per_type_and_domain
-      .filter(([, value]) => value > 100)
+      .filter(([, value]) => value > 960)
       .map(([target, value]) => ({
         source: target.split("/").at(0) ?? "Unknown",
-        target: value > threshold ? target : grouped(target),
+        target,
         value,
       })),
 
     sorted_requests
       .filter(({ objectSize }) => objectSize > threshold)
       .map(({ request_type, full_url, objectSize }) => ({
-        source: objectSize > threshold
-          ? [request_type, new URL(full_url).hostname].join("/")
-          : [request_type, "(other domains)"].join("/"),
+        source: [request_type, new URL(full_url).hostname].join("/"),
         target: [
           request_type,
           new URL(full_url).hostname,
@@ -161,7 +147,7 @@ await serve(async (req) => {
       ${to_string(links.flat())}
     ]
 
-    const height = ${Math.ceil(total / 3_000)}
+    const height = ${Math.ceil(total / 3_600)}
     
     ${await Deno.readTextFile(
       new URL(import.meta.resolve("./sankey.js")),

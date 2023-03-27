@@ -22,7 +22,12 @@ const nodeGroup = ({ id }) => {
   switch (type) {
     case "Script": {
       if (
-        ["assets.guim.co.uk", "contributions.guardianapis.com"].includes(domain)
+        [
+          "assets.guim.co.uk",
+          "interactive.guim.co.uk",
+          "contributions.guardianapis.com",
+          "sourcepoint.theguardian.com",
+        ].includes(domain)
       ) {
         return nodeGroups.indexOf("js-1st");
       } else if (domain) {
@@ -56,17 +61,9 @@ const nodeGroup = ({ id }) => {
 const { format } = Intl.NumberFormat("en-GB");
 
 const nodeLabel = ({ id, value }) => {
-  const path = id.split("/").at(-1);
-  const [one, two, ...rest] = path.split(".");
+  const path = id.split("/").filter(Boolean).at(-1);
 
-  if (two === undefined) {
-    return `${one} (${format(Math.ceil(value / 1000))} kB)`;
-  }
-
-  const ellipse = rest?.length > 1 ? "…" : undefined;
-  return [one?.slice(0, 24), two?.slice(0, 12), ellipse, rest.at(-1)]
-    .filter(Boolean)
-    .join(".");
+  return `${path} (${format(Math.ceil(value / 1000))} kB)`;
 };
 
 export const chart = SankeyChart(
@@ -86,9 +83,9 @@ export const chart = SankeyChart(
     width: 960,
     height,
     colors,
-    marginRight: 180,
+    marginRight: 240,
     nodeStroke: "none",
-    nodePadding: 6,
+    nodePadding: 12,
   }
 );
 
