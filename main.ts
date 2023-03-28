@@ -158,8 +158,8 @@ await serve(async (req) => {
     <div id="sankey" style="display: flex; min-height: 600px"></div>
 
     <div id="tables" style="display: flex; flex-wrap: wrap; gap: 1em;">
-    ${get_table("All JavaScript", per_domain)}
-    ${get_table("1st party JavaScript", first_party)}
+    ${get_table("JS size per domain", per_domain)}
+    ${get_table("JS files on assets.guim.co.uk", first_party)}
     </div>
   `,
   );
