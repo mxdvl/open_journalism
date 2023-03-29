@@ -134,6 +134,8 @@ await serve(async (req) => {
     ] satisfies { source: string; target: string; value: number }[][];
 
     const node_padding = 12;
+    const height = Math.ceil(total / 2_400) +
+      sorted_requests_above_threshold.length * node_padding;
 
     const perf_score = performance === undefined
       ? "<h3>(no Lighthouse score for this test)</h3>"
@@ -154,12 +156,8 @@ await serve(async (req) => {
       ${to_string(links.flat())}
     ]
 
-    const height = ${
-        Math.ceil(total / 2_400) +
-        sorted_requests_above_threshold.length * node_padding
-      }
-    
-    const nodePadding = ${node_padding}
+    const height = ${height};
+    const nodePadding = ${node_padding};
     
     ${await Deno.readTextFile(
         new URL(import.meta.resolve("./sankey.js")),
@@ -167,7 +165,7 @@ await serve(async (req) => {
     document.querySelector("#sankey")?.appendChild(chart);
     </script>
 
-    <div id="sankey" style="display: flex; min-height: 600px"></div>
+    <div id="sankey" style="display: flex; min-height: ${height}px"></div>
 
     <div id="tables" style="display: flex; flex-wrap: wrap; gap: 1em;">
     ${get_table("JS size per domain", per_domain)}
