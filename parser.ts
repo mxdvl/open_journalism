@@ -5,7 +5,6 @@ import {
   literal,
   number,
   object,
-  record,
   string,
   tuple,
 } from "https://deno.land/x/zod@v3.20.2/mod.ts";
