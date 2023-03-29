@@ -85,7 +85,7 @@ export const chart = SankeyChart(
     colors,
     marginRight: 240,
     nodeStroke: "none",
-    nodePadding: 12,
+    nodePadding,
   }
 );
 

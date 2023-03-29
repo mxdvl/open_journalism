@@ -109,6 +109,9 @@ await serve(async (req) => {
 
     const threshold = total / 250;
 
+    const sorted_requests_above_threshold = sorted_requests
+      .filter(({ objectSize }) => objectSize > threshold);
+
     const links = [
       requests_per_type_and_domain
         .filter(([, value]) => value > 960)
@@ -118,8 +121,7 @@ await serve(async (req) => {
           value,
         })),
 
-      sorted_requests
-        .filter(({ objectSize }) => objectSize > threshold)
+      sorted_requests_above_threshold
         .map(({ request_type, full_url, objectSize }) => ({
           source: [request_type, new URL(full_url).hostname].join("/"),
           target: [
@@ -130,6 +132,8 @@ await serve(async (req) => {
           value: objectSize,
         })),
     ] satisfies { source: string; target: string; value: number }[][];
+
+    const node_padding = 12;
 
     const perf_score = performance === undefined
       ? "<h3>(no Lighthouse score for this test)</h3>"
@@ -150,7 +154,12 @@ await serve(async (req) => {
       ${to_string(links.flat())}
     ]
 
-    const height = ${Math.ceil(total / 3_600)}
+    const height = ${
+        Math.ceil(total / 2_400) +
+        sorted_requests_above_threshold.length * node_padding
+      }
+    
+    const nodePadding = ${node_padding}
     
     ${await Deno.readTextFile(
         new URL(import.meta.resolve("./sankey.js")),
