@@ -21,10 +21,22 @@ export const get_report = async (test: string) => {
   const {
     testUrl,
     from,
-    median: {
-      firstView: { breakdown, requests, "lighthouse.Performance": performance },
-    },
+    runs: { 1: run },
   } = await cached(test);
+
+  console.log(run);
+
+  const step = run.firstView.numSteps === 1
+    ? run.firstView
+    : run.firstView.steps[0];
+
+  const {
+    breakdown,
+    requests,
+    "lighthouse.Performance": performance,
+  } = step;
+
+  console.log(step);
 
   console.info("Component audit for", underline(testUrl));
 

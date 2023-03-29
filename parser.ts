@@ -2,8 +2,10 @@ import {
   array,
   enum as literal_union,
   infer as inferred,
+  literal,
   number,
   object,
+  record,
   string,
   tuple,
 } from "https://deno.land/x/zod@v3.20.2/mod.ts";
@@ -32,21 +34,34 @@ const request = object({
   objectSize: number(),
 });
 
+const step = object({
+  "lighthouse.Performance": number().optional(),
+  requests: array(request),
+  breakdown: object({
+    html: type,
+    js: type,
+    css: type,
+    image: type,
+    font: type,
+    other: type,
+  }),
+});
+
+const single_run = object({
+  numSteps: literal(1),
+}).merge(step);
+
+const multiple_run = object({
+  numSteps: literal(2),
+  steps: array(step).nonempty(),
+});
+
 const result = object({
   testUrl: string(),
   from: string(),
-  median: object({
-    firstView: object({
-      "lighthouse.Performance": number().optional(),
-      requests: array(request),
-      breakdown: object({
-        html: type,
-        js: type,
-        css: type,
-        image: type,
-        font: type,
-        other: type,
-      }),
+  runs: object({
+    "1": object({
+      firstView: single_run.or(multiple_run),
     }),
   }),
 });
