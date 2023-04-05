@@ -8,9 +8,29 @@ const colour_mappings = /** @type {const} */ ({
   image: "#E38800",
   html: "#FF3D00",
   css: "#FF0099",
-  font: "#FFC700",
+  font: "#FF0099",
   other: "#B3B3B3",
+  everything: "#FFC700",
 });
+
+const ul = document.querySelector("#sankey ul.key");
+
+for (const [name, colour] of Object.entries(colour_mappings)) {
+  const li = document.createElement("li");
+  const box = document.createElement("div");
+  box.style.width = "15px";
+  box.style.height = "15px";
+  box.style.backgroundColor = colour;
+  li.style.display = "flex";
+  li.style.gap = "8px";
+  li.style.alignItems = "center";
+  const label = document.createElement("div");
+  label.innerText = name;
+  label.style.fontSize = "14px";
+  li.appendChild(box);
+  li.appendChild(label);
+  ul.appendChild(li);
+}
 
 const nodeGroups = Object.keys(colour_mappings);
 const colors = Object.values(colour_mappings);
@@ -50,6 +70,9 @@ const nodeGroup = ({ id }) => {
     case "Stylesheet":
       return nodeGroups.indexOf("css");
 
+    case "Everything else":
+      return nodeGroups.indexOf("everything");
+
     case "Fetch":
     case "XHR":
     case "Other":
@@ -77,16 +100,16 @@ export const chart = SankeyChart(
     nodeAlign: "left", // e.g., d3.sankeyJustify; set by input above
     linkColor: "source-target", // e.g., "source" or "target"; set by input above
     format: (
-      (f) => (d) =>
-        `${f(Math.ceil(d / 1000))} kB`
+      (f) => (d) => `${f(Math.ceil(d / 1000))} kB`
     )(d3.format(",.1~f")),
     width: 960,
     height,
     colors,
     marginRight: 240,
+    marginBottom: 60,
     nodeStroke: "none",
     nodePadding,
-  }
+  },
 );
 
 // Copyright 2021 Observable, Inc.
@@ -128,23 +151,24 @@ export function SankeyChart(
     marginRight = 1, // right margin, in pixels
     marginBottom = 5, // bottom margin, in pixels
     marginLeft = 1, // left margin, in pixels
-  } = {}
+  } = {},
 ) {
   // Convert nodeAlign from a name to a function (since d3-sankey is not part of core d3).
-  if (typeof nodeAlign !== "function")
-    nodeAlign =
-      {
-        left: d3Sankey.sankeyLeft,
-        right: d3Sankey.sankeyRight,
-        center: d3Sankey.sankeyCenter,
-      }[nodeAlign] ?? d3Sankey.sankeyJustify;
+  if (typeof nodeAlign !== "function") {
+    nodeAlign = {
+      left: d3Sankey.sankeyLeft,
+      right: d3Sankey.sankeyRight,
+      center: d3Sankey.sankeyCenter,
+    }[nodeAlign] ?? d3Sankey.sankeyJustify;
+  }
 
   // Compute values.
   const LS = d3.map(links, linkSource).map(intern);
   const LT = d3.map(links, linkTarget).map(intern);
   const LV = d3.map(links, linkValue);
-  if (nodes === undefined)
+  if (nodes === undefined) {
     nodes = Array.from(d3.union(LS, LT), (id) => ({ id }));
+  }
   const N = d3.map(nodes, nodeId).map(intern);
   const G = nodeGroup == null ? null : d3.map(nodes, nodeGroup).map(intern);
 
@@ -157,8 +181,9 @@ export function SankeyChart(
   }));
 
   // Ignore a group-based linkColor option if no groups are specified.
-  if (!G && ["source", "target", "source-target"].includes(linkColor))
+  if (!G && ["source", "target", "source-target"].includes(linkColor)) {
     linkColor = "currentColor";
+  }
 
   // Compute default domains.
   if (G && nodeGroups === undefined) nodeGroups = G;
@@ -196,12 +221,11 @@ export function SankeyChart(
 
   // Compute titles and labels using layout nodes, so as to access aggregate values.
   if (typeof format !== "function") format = d3.format(format);
-  const Tl =
-    nodeLabel === undefined
-      ? N
-      : nodeLabel == null
-      ? null
-      : d3.map(nodes, nodeLabel);
+  const Tl = nodeLabel === undefined
+    ? N
+    : nodeLabel == null
+    ? null
+    : d3.map(nodes, nodeLabel);
   const Tt = nodeTitle == null ? null : d3.map(nodes, nodeTitle);
   const Lt = linkTitle == null ? null : d3.map(links, linkTitle);
 
@@ -241,7 +265,7 @@ export function SankeyChart(
     .join("g")
     .style("mix-blend-mode", linkMixBlendMode);
 
-  if (linkColor === "source-target")
+  if (linkColor === "source-target") {
     link
       .append("linearGradient")
       .attr("id", (d) => `${uid}-link-${d.index}`)
@@ -260,6 +284,7 @@ export function SankeyChart(
           .attr("offset", "100%")
           .attr("stop-color", ({ target: { index: i } }) => color(G[i]))
       );
+  }
 
   link
     .append("path")
@@ -272,16 +297,16 @@ export function SankeyChart(
         ? ({ source: { index: i } }) => color(G[i])
         : linkColor === "target"
         ? ({ target: { index: i } }) => color(G[i])
-        : linkColor
+        : linkColor,
     )
     .attr("stroke-width", ({ width }) => Math.max(1, width))
     .call(
       Lt
         ? (path) => path.append("title").text(({ index: i }) => Lt[i])
-        : () => {}
+        : () => {},
     );
 
-  if (Tl)
+  if (Tl) {
     svg
       .append("g")
       .attr("font-family", "sans-serif")
@@ -294,6 +319,7 @@ export function SankeyChart(
       .attr("dy", "0.35em")
       .attr("text-anchor", "start")
       .text(({ index: i }) => Tl[i]);
+  }
 
   function intern(value) {
     return value !== null && typeof value === "object"

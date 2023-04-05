@@ -116,7 +116,9 @@ await serve(async (req) => {
       requests_per_type_and_domain
         .filter(([, value]) => value > 960)
         .map(([target, value]) => ({
-          source: target.split("/").at(0) ?? "Unknown",
+          source: target.split("/").at(0) === "Script"
+            ? "Script"
+            : "Everything else",
           target,
           value,
         })),
@@ -165,7 +167,10 @@ await serve(async (req) => {
     document.querySelector("#sankey")?.appendChild(chart);
     </script>
 
-    <div id="sankey" style="display: flex; min-height: ${height}px"></div>
+    <div id="sankey" style="display: flex; min-height: ${height}px; position: relative;">
+
+    <ul class="key" style="list-style-type: none; display: flex; gap: 20px; padding: 0; position: absolute; bottom: 0; left: 0;"></ul>
+    </div>
 
     <div id="tables" style="display: flex; flex-wrap: wrap; gap: 1em;">
     ${get_table("JS size per domain", per_domain)}
