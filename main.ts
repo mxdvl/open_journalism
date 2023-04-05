@@ -140,6 +140,25 @@ await serve(async (req) => {
     const height = Math.ceil(total / 2_400) +
       sorted_requests_above_threshold.length * node_padding;
 
+    const image_url = (test: string) => {
+      const [date, ...rest] = test.split("_");
+      if (!date) throw new Error("Invalid test");
+
+      const [a, b, c, d, e, f] = date.split("");
+
+      if (!(a && b && c && d && e && f)) throw new Error("Invalid test");
+      return [
+        "https://www.webpagetest.org/results",
+        a + b,
+        c + d,
+        e + f,
+        ...rest,
+        "1_screen.jpg",
+      ].join(
+        "/",
+      );
+    };
+
     const perf_score = performance === undefined
       ? "<h3>(no Lighthouse score for this test)</h3>"
       : `<h3>Lighthouse performance score: ${
@@ -161,7 +180,6 @@ await serve(async (req) => {
       <li>TBT: ${extraData.tbt}</li>
     </ul>
 
-
     <script type="module">
     const links = [
       ${to_string(links.flat())}
@@ -180,6 +198,8 @@ await serve(async (req) => {
 
     <ul class="key" style="list-style-type: none; display: flex; gap: 20px; padding: 0; position: absolute; bottom: 0; left: 0;"></ul>
     </div>
+
+    <img src="${image_url(test)}" width="211" />
 
     <div id="tables" style="display: flex; flex-wrap: wrap; gap: 1em;">
     ${get_table("JS size per domain", per_domain)}
