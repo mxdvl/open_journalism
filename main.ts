@@ -84,6 +84,8 @@ await serve(async (req) => {
 
     const total = requests.reduce((acc, req) => acc + req.objectSize, 0);
 
+    const round_to_hundred = (n: number) => Math.round(n / 100) * 100;
+
     const sorted_requests = requests
       .filter(({ request_type }) => request_type !== "Preflight")
       .map((request) =>
@@ -140,7 +142,7 @@ await serve(async (req) => {
     const height = Math.ceil(total / 2_400) +
       sorted_requests_above_threshold.length * node_padding;
 
-    const image_url = (test: string) => {
+    const image_url = (test: string, n = 2000) => {
       const [date, ...rest] = test.split("_");
       if (!date) throw new Error("Invalid test");
 
@@ -153,11 +155,14 @@ await serve(async (req) => {
         c + d,
         e + f,
         ...rest,
-        "1_screen.jpg",
+        `video_1/ms_${n.toString().padStart(6, "0")}.jpg`,
       ].join(
         "/",
       );
     };
+
+    const filmstrip_url = (test: string) =>
+      `https://www.webpagetest.org/video/filmstrip.php?tests=${test}-e:6-filmstrip&thumbSize=300&ival=1200&end=visual&bg=1C1B21`;
 
     const perf_score = performance === undefined
       ? "<h3>(no Lighthouse score for this test)</h3>"
@@ -180,6 +185,10 @@ await serve(async (req) => {
       <li>TBT: ${extraData.tbt}</li>
     </ul>
 
+    <figure style="max-width: 100%; overflow-x: scroll;">
+      <img src="${filmstrip_url(test)}" height="336" />
+    </figure>
+
     <script type="module">
     const links = [
       ${to_string(links.flat())}
@@ -198,8 +207,6 @@ await serve(async (req) => {
 
     <ul class="key" style="list-style-type: none; display: flex; gap: 20px; padding: 0; position: absolute; bottom: 0; left: 0;"></ul>
     </div>
-
-    <img src="${image_url(test)}" width="211" />
 
     <div id="tables" style="display: flex; flex-wrap: wrap; gap: 1em;">
     ${get_table("JS size per domain", per_domain)}
