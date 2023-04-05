@@ -7,7 +7,6 @@ const colour_mappings = /** @type {const} */ ({
   "js-3rd": "#00DAF8",
   image: "#E38800",
   html: "#FF3D00",
-  css: "#FF0099",
   font: "#FF0099",
   other: "#B3B3B3",
   everything: "#FFC700",
