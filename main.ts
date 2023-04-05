@@ -79,6 +79,7 @@ await serve(async (req) => {
       performance,
       from,
       requests,
+      extraData,
     } = await get_report(test);
 
     const total = requests.reduce((acc, req) => acc + req.objectSize, 0);
@@ -152,6 +153,14 @@ await serve(async (req) => {
 
     ${perf_score}
     <h3>From: ${from}</h3>
+
+    <ul>
+      <li>TTFB: ${extraData.ttfb}</li>
+      <li>LCP: ${extraData.lcp}</li>
+      <li>CLS: ${extraData.cls?.toFixed(3)}</li>
+      <li>TBT: ${extraData.tbt}</li>
+    </ul>
+
 
     <script type="module">
     const links = [

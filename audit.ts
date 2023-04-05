@@ -24,8 +24,6 @@ export const get_report = async (test: string) => {
     runs: { 1: run },
   } = await cached(test);
 
-  console.log(run);
-
   const step = run.firstView.numSteps === 1
     ? run.firstView
     : run.firstView.steps[0];
@@ -34,9 +32,22 @@ export const get_report = async (test: string) => {
     breakdown,
     requests,
     "lighthouse.Performance": performance,
+    "chromeUserTiming.CumulativeLayoutShift": cls,
+    "firstContentfulPaint": fcp,
+    "chromeUserTiming.LargestContentfulPaint": lcp,
+    "TotalBlockingTime": tbt,
+    "TTFB": ttfb,
   } = step;
 
-  console.log(step);
+  const extraData = {
+    cls,
+    tbt,
+    ttfb,
+    lcp,
+    fcp,
+  };
+
+  console.log(extraData);
 
   console.info("Component audit for", underline(testUrl));
 
@@ -85,6 +96,7 @@ export const get_report = async (test: string) => {
     first_party,
     performance,
     from,
+    extraData,
     requests: requests.map((request) => {
       const request_type = types.find((type) =>
         type === request.request_type

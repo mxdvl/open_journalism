@@ -35,6 +35,11 @@ const request = object({
 
 const step = object({
   "lighthouse.Performance": number().optional(),
+  "firstContentfulPaint": number().optional(),
+  "chromeUserTiming.LargestContentfulPaint": number().optional(),
+  "chromeUserTiming.CumulativeLayoutShift": number().optional(),
+  "TotalBlockingTime": number().optional(),
+  "TTFB": number().optional(),
   requests: array(request),
   breakdown: object({
     html: type,
