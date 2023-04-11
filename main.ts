@@ -20,7 +20,7 @@ await serve(async (req) => {
     const params = test ? "?" + new URLSearchParams({ test }).toString() : "";
 
     return Response.redirect(
-      `https://guardian.github.io/open-journalism/${params}`,
+      `https://guardian.github.io/open-journalism/wpt/viewer/${params}`,
     );
   } catch (error) {
     return new Response(error, {
